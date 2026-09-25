@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual Environments
+env/
+venv/
+sentinel_env/
+ENV/
+.env
+
+# Runtime Logs
+*.log
+logs/*.log
+sentinel_live.log
+run_debug.log
+
+# SQLite Database journal files (keep sentinel.db or schema)
+*.db-journal
+*.db-wal
+*.db-shm
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Portable Git binaries & Archives
+git/
+*.zip

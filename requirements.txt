@@ -1,0 +1,20 @@
+# Smart Waste Sentinel - Dependencies
+# Core Web Framework
+Flask>=3.0.0
+Werkzeug>=3.0.0
+
+# Computer Vision & Edge AI
+opencv-python>=4.8.0
+ultralytics>=8.1.0
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# Hardware & Embedded I/O (Raspberry Pi OS)
+# Note: On non-Linux/non-RPi test environments, the system falls back to built-in simulation drivers
+smbus2>=0.4.3
+gpiozero>=2.0
+lgpio>=0.2.2.0 ; platform_system=="Linux"
+
+# Utilities
+requests>=2.31.0
+tabulate>=0.9.0
