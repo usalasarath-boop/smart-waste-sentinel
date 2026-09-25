@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}System Controls & Live Hardware Calibration{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+        <h1 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
+            <i class="fa-solid fa-sliders text-emerald-600"></i>
+            <span>Hardware Tuning & Live Demonstration Console</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-1">
+            Real-time threshold calibration, manual actuator overrides, and sensor simulation panel for live demonstrations.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Live Demo Interactive Box -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i>
+                        <span>Live Environmental Simulation Panel</span>
+                    </h3>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">Interactive</span>
+                </div>
+                <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium">
+                    Demonstrate autonomous day/night behavior instantly without physically darkening the room:
+                </p>
+
+                <div class="space-y-3">
+                    <button onclick="setSimulatedLux(12)" class="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-amber-400 p-3.5 rounded-xl flex items-center justify-between text-left transition group shadow-sm">
+                        <div>
+                            <span class="text-xs font-bold text-slate-900 group-hover:text-amber-600 flex items-center space-x-2">
+                                <i class="fa-solid fa-moon text-indigo-500"></i>
+                                <span>Simulate Nighttime Condition (12 Lux)</span>
+                            </span>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Triggers auto night mode; LED ring turns ON immediately</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    </button>
+
+                    <button onclick="setSimulatedLux(180)" class="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-emerald-500 p-3.5 rounded-xl flex items-center justify-between text-left transition group shadow-sm">
+                        <div>
+                            <span class="text-xs font-bold text-slate-900 group-hover:text-emerald-700 flex items-center space-x-2">
+                                <i class="fa-solid fa-sun text-amber-500"></i>
+                                <span>Simulate Daylight Condition (180 Lux)</span>
+                            </span>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Illumination sufficient; LED ring turns OFF immediately</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    </button>
+
+                    <button onclick="setSimulatedLux(null)" class="w-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 p-3.5 rounded-xl flex items-center justify-between text-left transition shadow-sm">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span>Resume Real BH1750 Sensor Telemetry</span>
+                            </span>
+                            <p class="text-[11px] text-emerald-700 mt-0.5">Restores live optical reading from I2C bus</p>
+                        </div>
+                        <i class="fa-solid fa-check text-xs text-emerald-600 font-bold"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Manual Actuator Override -->
+            <div class="mt-6 pt-5 border-t border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-900 block">Manual LED Switch</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Override GPIO 18 transistor state directly</span>
+                </div>
+                <button onclick="toggleLed()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs px-4 py-2 rounded-xl border border-slate-300 font-bold transition shadow-sm">
+                    Toggle LED
+                </button>
+            </div>
+
+            <!-- Storage & Evidence Maintenance -->
+            <div class="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-rose-700 block">Purge Evidence Photos & Logs</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Deletes all saved JPEG snapshots & resets database</span>
+                </div>
+                <button onclick="clearAllPhotos()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs px-4 py-2 rounded-xl border border-rose-300 font-bold transition shadow-sm">
+                    Delete All Photos
+                </button>
+            </div>
+        </div>
+
+        <!-- Hardware Pinout & Wiring Quick Reference -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2 mb-4">
+                <i class="fa-brands fa-raspberry-pi text-rose-500"></i>
+                <span>Raspberry Pi 5 GPIO Pin Configuration</span>
+            </h3>
+
+            <div class="overflow-x-auto text-xs">
+                <table class="w-full text-left text-slate-700">
+                    <thead class="bg-slate-50 uppercase font-bold text-[10px] text-slate-500 border-b border-slate-200">
+                        <tr>
+                            <th class="py-2.5 px-3">Peripheral</th>
+                            <th class="py-2.5 px-3">Pin</th>
+                            <th class="py-2.5 px-3">RPi 5 Function</th>
+                            <th class="py-2.5 px-3">Electrical Spec</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-amber-600">BH1750 VCC</td>
+                            <td class="py-2.5 px-3">Pin 1</td>
+                            <td class="py-2.5 px-3 text-slate-800">3.3V Power</td>
+                            <td class="py-2.5 px-3 text-slate-500">3.3V DC (Safe)</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-amber-600">BH1750 GND</td>
+                            <td class="py-2.5 px-3">Pin 6</td>
+                            <td class="py-2.5 px-3 text-slate-800">Ground</td>
+                            <td class="py-2.5 px-3 text-slate-500">0V Reference</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-amber-600">BH1750 SDA</td>
+                            <td class="py-2.5 px-3">Pin 3</td>
+                            <td class="py-2.5 px-3 text-slate-800">GPIO 2 (I2C1 Data)</td>
+                            <td class="py-2.5 px-3 text-slate-500">3.3V Bus</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-amber-600">BH1750 SCL</td>
+                            <td class="py-2.5 px-3">Pin 5</td>
+                            <td class="py-2.5 px-3 text-slate-800">GPIO 3 (I2C1 Clock)</td>
+                            <td class="py-2.5 px-3 text-slate-500">100/400 kHz</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-emerald-700">LED Driver Gate</td>
+                            <td class="py-2.5 px-3">Pin 12</td>
+                            <td class="py-2.5 px-3 text-slate-800">GPIO 18 (PWM0)</td>
+                            <td class="py-2.5 px-3 text-slate-500">3.3V Logic Trigger</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-emerald-700">LED Power (VCC)</td>
+                            <td class="py-2.5 px-3">Pin 2 / 4</td>
+                            <td class="py-2.5 px-3 text-slate-800">5V Power Rail</td>
+                            <td class="py-2.5 px-3 text-slate-500">5V USB Power (1-2A)</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-sky-600">Camera Module 3</td>
+                            <td class="py-2.5 px-3">CAM Port</td>
+                            <td class="py-2.5 px-3 text-slate-800">MIPI CSI-2 2-lane</td>
+                            <td class="py-2.5 px-3 text-slate-500">Hardware ISP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-900 font-medium">
+                <span class="text-amber-700 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Wiring Safety Rule:</span>
+                Never connect the BH1750 VCC to the 5V rail! BH1750 logic lines are 3.3V tolerant. Always use Pin 1 (3.3V).
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function clearAllPhotos() {
+        if (confirm("Are you sure you want to permanently delete ALL captured evidence photos and clear the audit database? This cannot be undone.")) {
+            fetch('/api/clear_all_incidents', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Successfully deleted " + data.deleted_count + " photos and cleared audit records.");
+                        window.location.reload();
+                    } else {
+                        alert("Failed to clear photos: " + (data.error || "Unknown"));
+                    }
+                })
+                .catch(err => alert("Error: " + err));
+        }
+    }
+</script>
+{% endblock %}

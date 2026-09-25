@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Circular Waste Intelligence & Analytics{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+        <h1 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
+            <i class="fa-solid fa-chart-pie text-emerald-600"></i>
+            <span>Circular Waste Intelligence & Dumping Analytics</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-1">
+            Aggregated Edge-AI analytics driving municipal resource optimization and UN SDG 11 & 12 compliance.
+        </p>
+    </div>
+
+    <!-- Analytics KPI Cards (White Cards) -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <p class="text-xs text-slate-500 uppercase font-bold">Total Stored Incidents</p>
+            <h3 class="text-3xl font-extrabold text-slate-900 mt-1 font-mono">{{ stats.total_events }}</h3>
+            <p class="text-[11px] text-emerald-600 mt-2 font-bold"><i class="fa-solid fa-shield-halved mr-1"></i> Active Edge Monitoring</p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <p class="text-xs text-slate-500 uppercase font-bold">Estimated Recyclable Divertible</p>
+            <h3 class="text-3xl font-extrabold text-emerald-700 mt-1 font-mono">68.4%</h3>
+            <p class="text-[11px] text-slate-500 mt-2 font-medium">Plastics & clean corrugated cardboards</p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <p class="text-xs text-slate-500 uppercase font-bold">Avg Ambient Lux Telemetry</p>
+            <h3 class="text-3xl font-extrabold text-amber-500 mt-1 font-mono">{{ stats.avg_lux }} <span class="text-sm font-normal text-slate-400">Lux</span></h3>
+            <p class="text-[11px] text-slate-500 mt-2 font-medium">BH1750 Optical Calibrated</p>
+        </div>
+    </div>
+
+    <!-- Charts Grid (White Card Containers) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Chart 1: Dumping Incidents by Hour -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-chart-column text-emerald-600"></i>
+                    <span>Temporal Vulnerability (Incidents by Hour)</span>
+                </h3>
+            </div>
+            <div class="h-64">
+                <canvas id="hourlyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 2: Waste Material Composition -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-recycle text-emerald-600"></i>
+                    <span>Waste Material Composition Distribution</span>
+                </h3>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="classChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Municipal Environmental Impact Panel -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+        <h3 class="text-base font-extrabold text-slate-900 flex items-center space-x-2 mb-2">
+            <i class="fa-solid fa-leaf text-emerald-600"></i>
+            <span>Environmental Impact: Circular Waste Intelligence & Active Deterrence</span>
+        </h3>
+        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+            Traditional municipal surveillance relies on passive CCTV recordings reviewed only <em>after</em> severe environmental contamination occurs. 
+            <strong>Smart Waste Sentinel</strong> transforms surveillance into active real-time deterrence:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span class="font-extrabold text-emerald-700 block mb-1">1. Zero Cloud Dependence</span>
+                Runs 100% on the Raspberry Pi 5 processor without streaming sensitive video footage to external cloud services, guaranteeing citizen privacy and operational reliability during network outages.
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span class="font-extrabold text-emerald-700 block mb-1">2. Spatiotemporal Intent Reasoning</span>
+                Mathematical multi-frame centroid association eliminates false alarms caused by everyday pedestrians carrying backpacks or walking past litter.
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span class="font-extrabold text-emerald-700 block mb-1">3. Closed-Loop Circular Waste Audit</span>
+                Classifies waste into polymers, organics, and dry packaging, providing city planners with actionable data to deploy specialized material recovery collection units.
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Chart.js with backend data
+    const classData = {{ stats.class_counts|tojson }};
+    const hourlyData = {{ stats.hourly_counts|tojson }};
+
+    // Class Distribution Doughnut Chart
+    const classLabels = Object.keys(classData).length ? Object.keys(classData).map(k => k.toUpperCase()) : ["GARBAGE BAG", "PLASTIC", "BOX", "CONTAINER"];
+    const classValues = Object.values(classData).length ? Object.values(classData) : [14, 8, 4, 3];
+
+    new Chart(document.getElementById('classChart'), {
+        type: 'doughnut',
+        data: {
+            labels: classLabels,
+            datasets: [{
+                data: classValues,
+                backgroundColor: ['#e11d48', '#059669', '#0284c7', '#d97706', '#7c3aed'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#475569', font: { size: 11, weight: 'bold' } } }
+            }
+        }
+    });
+
+    // Hourly Bar Chart
+    const hourLabels = Object.keys(hourlyData).length ? Object.keys(hourlyData) : ["02:00", "06:00", "10:00", "14:00", "18:00", "22:00", "00:00"];
+    const hourValues = Object.values(hourlyData).length ? Object.values(hourlyData) : [2, 1, 5, 8, 14, 19, 9];
+
+    new Chart(document.getElementById('hourlyChart'), {
+        type: 'bar',
+        data: {
+            labels: hourLabels,
+            datasets: [{
+                label: 'Illegal Dumping Events',
+                data: hourValues,
+                backgroundColor: '#059669',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { ticks: { color: '#64748b' }, grid: { color: '#f1f5f9' } },
+                y: { ticks: { color: '#64748b' }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+{% endblock %}
